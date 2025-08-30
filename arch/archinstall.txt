@@ -1,0 +1,415 @@
+
+To implement scrolling in the terminal
+    tmux
+change font (ter-p24n, ter-p28n, ter-p32n)
+    setfont ter-p24n
+or edit or create file /etc/vconsole.conf
+add 
+    FONT=ter-p24n 
+    FONT_MAP=8859-2
+
+
+
+=== Network setup ===
+
+check internet connection
+    ping google.com
+
+Wi-fi setup
+    iwctl
+
+    device list
+
+if wi-fi module Powered field is off
+    device <module-name> set-property Powered on
+
+if error "Operation failed" => unblocked module wi-fi.
+exit from iwctl => Ctrl+c
+    rfkill
+search "wlan" in devices list
+If the HARD parameter is displayed as blocked, 
+it means that the WiFi module is hardware locked. 
+Find the physical switcher on your laptop 
+and turn it on. If "SOFT" is displayed as "blocked", 
+simply unlock the module:
+    rfkill unblock wlan
+
+If the command is stuck with the 
+"Invalid buffer destination" error, 
+interrupt it using "Ctrl + C".
+Re-check the module status:
+    rfkill
+
+in iwctl - get a list of available networks:
+    station <module-name> get-networks
+connect to networks:
+    station <module-name> connect <network-name>
+Enter password
+
+The connection is successful if the program does not display 
+any additional messages. After a successful connection, 
+exit iwctl using the "Ctrl + C" shortcut.
+
+Ethernet setup => add static IP
+
+Create or modify the
+/etc/systemd/network/20-wired.network 
+file with the following contents (the file name may vary):
+    nano /etc/systemd/network/20-wired.network 
+insert
+    [Match]
+	Name=<device-name>
+
+	[Network]
+	Address=<ip-address>/24
+	Gateway=<ip-gateway>  # Укажите IP-адрес вашего шлюза
+	DNS=<ip-dns1> <ip-dns2>
+
+Apply the settings by restarting the systemd-networkd service:
+    systemctl restart systemd-networkd
+
+Check that the settings are applied correctly:
+    ip addr show <device-name>
+
+Check internet connection
+    ping google.com
+
+=== Pacman setup in live OS ===
+
+Check mirrors list
+    nano /etc/pacman.d/mirrorlist
+
+If there is an internet connection, the list of mirrors will automatically 
+update in a short time (reflector). 
+The list should contain no more than 30 mirrors.
+
+Update the package database to have the latest package versions:
+    pacman -Sy
+
+update the trusted key database. 
+This is necessary to verify the integrity of the packages being installed:
+    pacman-key --init
+    pacman-key --populate archlinux
+
+
+    !!! LinuxShef - manjaro ???
+        pacman-mirrors --fasttrack ; pacman -Syy archlinux-keyring --noconfirm
+
+in /etc/pacman.d/mirrorlist add:
+    https://mirror.yandex.ru/archlinux/<$repo/os/$arch ???>
+
+in file /etc/pacman.conf:
+set ParallelDowloads = 15
+uncomment Color
+
+
+
+=== Date and time synchronization ===
+
+ A properly configured time in the live environment is necessary 
+ to avoid problems with downloading packages. 
+ Check the date and time settings:
+    timedatectl
+
+Make sure that "System clock synchronized" has the status "yes". 
+If it doesn't, install the chrony utility:
+    pacman -S chrony
+
+Start chrony:
+    systemctl start chronyd
+
+Re-check the time synchronization status:
+    timedatectl
+
+
+=== Disk preparation ===
+
+minimal config:
+- for EFI-system: EFI and Root partitions
+- for BIOS-system: only Root partition
+
+Recommended and universal configuration:
+- for EFI-system: EFI, Root, Swap and Home partitions
+- for BIOS-system: only Root, Swap and Home partitions
+
+
+Get info on disks and partitions:
+    lsblk
+
+remember the name of the disk on which the installation will be performed    
+Prepared which fdisk, cfdisk
+
+formated disk
+    mkfs.vfat /dev/<efi-partition>
+    mkfs.ext4 /dev/<root-or-home-partition>
+    mkswap /dev/<swap-partition>
+
+=== Mounted partitions ===
+
+mount root-partition:   
+    mount /dev/<root-partition> /mnt
+
+mount swap
+    swapon /dev/<swap-partition>
+
+if exist EFI-partition:
+    mkdir -p /mnt/boot/efi
+    mount /dev/<efi-partition> /mnt/boot/efi
+
+if exist Home-partition:
+    mkdir -p /mnt/home
+    mount /dev/<home-partition> /mnt/home
+
+
+
+
+=== System installation ===
+
+set base packages:
+
+pacstrap /mnt
+
+variant 1 (from habr):
+base base-devel linux linux-firmware linux-headers
+xorg-server xorg-xinit efibootmgr grub os-prober sudo 
+vim man bash-completion networkmanager konsole firefox
+
+    
+additional packages
+    neofetch
+    dolphin
+    qview
+    vlc
+    audacious
+    htop
+    libreoffice‑fresh
+    code
+    TimeShift 
+
+    !!! Unixoid
+        ttf-ubuntu-font-family ttf-hack ttf-dejavu ttf-opensans
+
+variant LinuxShef:
+    base base-devel linux linux-headers linux-firmware dosfstools intel-ucode amd-ucode 
+    iucode-tool xf86-video-intel xf86-video-nouveau xf86-video-amdgpu xf86-video-ati 
+    nano vim bluez bluez-utils pipewire pipewire-alsa pipewire-jack 
+    networkmanager dhcpcd dhclient pipewire-media-session archlinux-keyring zsh zsh-completions
+    network-manager-applet
+
+
+
+=== Create partitions configuration file:
+    genfstab -U /mnt >> /mnt/etc/fstab
+
+check file:
+    cat /mnt/etc/fstab
+
+
+
+=== Enter in installed system ===
+
+    arch-chroot
+
+View regions:
+    ls /usr/share/zoneinfo/
+View cities:
+    ls /usr/share/zoneinfo/<Region>
+
+Set time
+    ln -sf /usr/share/zoneinfo/<Region>/<City> /etc/localtime
+
+hardware time synchronization:
+    hwclock --systohc
+
+
+!!! Configure pacman as you would in a live environment
+
+=== Localization ===
+
+    nano /etc/locale.gen
+
+uncomment
+    ru_RU.UTF-8
+    en_US.UTF-8
+
+    nano /etc/locale.conf
+add:
+    LANG=ru_RU.UTF-8    
+
+!!! LinuxShef
+            /etc/vconsole.conf
+        add 
+            KEYMAP=ru
+            FONT=cyr-sun16
+        
+        add in /etc/hostname computer name
+
+        add in /etc/hosts
+            127.0.0.1 localhost
+            ::1       localhost
+            127.0.0.1 <comp-name>.localdomain <comp-name>
+
+
+locale generate
+    locale-gen
+
+
+
+=== !!! LinuxShef ===
+    mkinitcpio -P
+
+install drivers on intel vide-card
+    pacman -S mesa mesa-demos lib32-mesa vulkan-intel lib32-vulkan-intel vulkan-icd-loader lib32-vulkan-icd-loader libva-intel-driver lib32-libva-intel-driver
+
+install drivers on intel vide-card
+    pacman -S mesa mesa-demos lib32-mesa vulkan-radeon lib32-vulkan-radeon vulkan-icd-loader lib32-vulkan-icd-loader network-manager-applet
+
+install last driver nvidia (some time errors)
+    pacman -S nvidia-dkms
+
+other: instal mhwd package from !!! manjaro
+    pacman -S mhwd     
+
+install nvidia drivers
+    mhwd -a pci nonfree 0300
+
+
+install additional packages
+    xorg xorg-xrandr xorg-sever xorg-xinit
+    xdg-utils xdg-user-dirs
+    plasma sddm  
+    konsole  dolphin nemo discover 
+    
+    ffmpegthumbnailer ffmpegthumbs
+    noto-fonts-emoji ttf-font-awesome ttf-dejavu ttf-ubuntu-font-family
+    libappimage 
+    pipewire-jack pipewire-alsa pipewire-media-session easyeffects
+    git wget cups os-prober go zsh zsh-complitions 
+    qemu-desktop gnome-boxes libvirt virt-manager 
+    
+    gvfs-mtp gvfs-gphoto2  gvfs-smb sshfs freetype2 libgsf totem evince atril gnome-epub-thumbnailer file-roller unzip ntfs-3g imagemagick flac wavpack lame a52dec libdca libmad libde265 libdv libmpeg2 schroedinger libtheora libvpx x264 x265 xvidcore mkvtoolnix-cli mkvtoolnix-gui ogmtools gstreamer xine-lib gst-libav ffmpeg qt6-multimedia-ffmpeg ktorrent qbittorrent p7zip 
+
+    dnsmasq apparmor zstd cabextract tar openssh  gamemode  desktop-file-utils curl dbus  dbus-broker cpupower zenity lsb-release nss lsof  lib32-gcc-libs  gnome-disk-utility lrzip unrar unzip unace squashfs-tools ttf-liberation
+
+    telegram-desktop spectacle udisks2
+
+    openvpn networkmanager-openvpn
+    print-manager pavucontrol flameshot kcalc ark screenfetch  htop bpytop gnome-usage firefox gwenview dragon kwrite mousepad conky gparted timeshift baobab
+----
+
+    libpamac libpamac-flatpak-plugin libpamac-snap-plugin pamac-cli 
+    manjaro-settings-manager manjaro-settings-manager-kcm manjaro-icons manjaro-printer timeshift-autosnap-manjaro manjaro-input manjaro-pipewire webapp-manager-manjaro
+
+    yay
+sddm-ksm appimagelauncher xapp-appimage-thumbnailer
+gvfs-afs lib32-openssh lib32-gamemode havegen
+lib32-freetype2 lib32-libgl  lib32-libx11 lib32-libxss lib32-alsa-plugins lib32-libgpg-error lib32-nss mhwd mhwd-db neofetch --noconfirm
+
+
+
+=== NetworkManager ===
+
+    systemctl enable NetworkManager
+
+
+
+=== Set boot-loader ===
+
+        !!! LinuxShef
+            pacman -Sy grub grub-efibootmgr
+
+installing grub on a disk (not on a partition)
+    grub-install /dev/sd(a,b,d) 
+
+    nano /etc/default/grub
+
+        !!! Unixoid
+            remove "quiet" from  
+                GRUB_CMDLINE_LINUX_DEFAULT="loglevel=3 quiet"
+
+        !!! LinuxShef
+                nano /etc/mkinitcpio.conf 
+
+            in line HOOKS delete  consolefont         
+
+            run
+                mkinitcpio -P
+
+
+generate config file:
+    grub-mkconfig -o /boot/grub/grub.cfg
+
+
+
+=== Account settings ===
+
+root set password:
+    passwd
+
+add user
+    useradd -  m -G wheel -s /bin/bash <name>
+
+    !!! LinuxShef 
+        useradd -m -G wheel -s /bin/zsh <name>
+
+set uses password
+    passwd <name>
+
+uncomment #%wheel ALL=(ALL:ALL) ALL in 
+    nano /etc/sudoers
+
+
+
+
+=== Installing the Login Manager ===
+
+    pacman -S sddm
+
+    systemctl enable sddm
+
+=== Installing the graphical environment === 
+
+    pacman -S plasma
+
+is install gnome    
+    pacman -S gnome
+    systemctl disable sddm
+    systemctl enable gdm
+
+
+=== !!! LinuxShef ===
+
+    systemctl enable bluetooth
+
+    systemctl enable libvirtd
+
+    systemctl enable cups
+
+    systemctl enable haveged
+
+    systemctl enable dbus-broker
+
+
+
+
+=== Finish ===
+    !!! LinuxShef before exit 
+            
+            mkinitcpio -P
+
+        generate config file:
+            grub-mkconfig -o /boot/grub/grub.cfg
+        or ??? 
+            update-grub
+
+exit from installed system
+    exit
+
+unmount all
+    umount -R /mnt
+
+
+=== !!! LinuxShef after entet in new system ===
+
+maximum performance, but high battery consumption on a laptop
+    cpupower frequency-set -g performance
