@@ -277,33 +277,30 @@ install nvidia drivers
 install additional packages
     xorg xorg-xrandr xorg-sever xorg-xinit
     xdg-utils xdg-user-dirs
-    plasma sddm  
+    plasma sddm sddm-ksm 
     konsole  dolphin nemo discover 
-    
     ffmpegthumbnailer ffmpegthumbs
     noto-fonts-emoji ttf-font-awesome ttf-dejavu ttf-ubuntu-font-family
-    libappimage 
+    libappimage appimagelauncher xapp-appimage-thumbnailer
     pipewire-jack pipewire-alsa pipewire-media-session easyeffects
     git wget cups os-prober go zsh zsh-complitions 
     qemu-desktop gnome-boxes libvirt virt-manager 
     
-    gvfs-mtp gvfs-gphoto2  gvfs-smb sshfs freetype2 libgsf totem evince atril gnome-epub-thumbnailer file-roller unzip ntfs-3g imagemagick flac wavpack lame a52dec libdca libmad libde265 libdv libmpeg2 schroedinger libtheora libvpx x264 x265 xvidcore mkvtoolnix-cli mkvtoolnix-gui ogmtools gstreamer xine-lib gst-libav ffmpeg qt6-multimedia-ffmpeg ktorrent qbittorrent p7zip 
+    gvfs-mtp gvfs-gphoto2 gvfs-afs gvfs-smb sshfs freetype2 libgsf totem evince atril gnome-epub-thumbnailer file-roller unzip ntfs-3g imagemagick flac wavpack lame a52dec libdca libmad libde265 libdv libmpeg2 schroedinger libtheora libvpx x264 x265 xvidcore mkvtoolnix-cli mkvtoolnix-gui ogmtools gstreamer xine-lib gst-libav ffmpeg qt6-multimedia-ffmpeg ktorrent qbtorrent p7zip 
 
-    dnsmasq apparmor zstd cabextract tar openssh  gamemode  desktop-file-utils curl dbus  dbus-broker cpupower zenity lsb-release nss lsof  lib32-gcc-libs  gnome-disk-utility lrzip unrar unzip unace squashfs-tools ttf-liberation
+    dnsmasq apparmor zstd cabextract tar openssh lib32-openssh gamemode lib32-gamemode desktop-file-utils curl dbus havegen dbus-broker cpupower zenity lsb-release nss lsof lib32-freetype2 lib32-libgl lib32-gcc-libs lib32-libx11 lib32-libxss lib32-alsa-plugins lib32-libgpg-error lib32-nss mhwd mhwd-db gnome-disk-utility lrzip unrar unzip unace squashfs-tools ttf-liberation
 
     telegram-desktop spectacle udisks2
 
     openvpn networkmanager-openvpn
-    print-manager pavucontrol flameshot kcalc ark screenfetch  htop bpytop gnome-usage firefox gwenview dragon kwrite mousepad conky gparted timeshift baobab
-----
+    print-manager pavucontrol flameshot kcalc ark screenfetch neofetch htop bpytop gnome-usage firefox gwenview dragon kwrite mousepad conky gparted timeshift baobab
 
     libpamac libpamac-flatpak-plugin libpamac-snap-plugin pamac-cli 
     manjaro-settings-manager manjaro-settings-manager-kcm manjaro-icons manjaro-printer timeshift-autosnap-manjaro manjaro-input manjaro-pipewire webapp-manager-manjaro
 
     yay
-sddm-ksm appimagelauncher xapp-appimage-thumbnailer
-gvfs-afs lib32-openssh lib32-gamemode havegen
-lib32-freetype2 lib32-libgl  lib32-libx11 lib32-libxss lib32-alsa-plugins lib32-libgpg-error lib32-nss mhwd mhwd-db neofetch --noconfirm
+
+    --noconfirm
 
 
 
