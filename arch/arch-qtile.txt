@@ -2,8 +2,7 @@
 
 setfont ter-132n
 
-sudo pacman -Sy qtile lxappearance nitrogen thunar xfce4-terminal picom midori archlinux-wallpaper lightdm lightdm-gtk-greeter
-kate	
+sudo pacman -Sy qtile lxappearance nitrogen thunar xfce4-terminal picom midori archlinux-wallpaper lightdm lightdm-gtk-greeter kate	nemo
     
 sudo systemctl enable lightdm
 
