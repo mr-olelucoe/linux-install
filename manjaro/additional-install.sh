@@ -1,0 +1,3 @@
+#!/bin/bash
+
+pacman -Sy ffmpegthumbnailer ffmpegthumbs noto-fonts-emoji ttf-font-awesome ttf-liberation ttf-dejavu ttf-ubuntu-font-family libmpeg2 x264 x265 xvidcore mkvtoolnix-cli mkvtoolnix-gui ffmpeg qt6-multimedia-ffmpeg qbittorrent htop bpytop gparted timeshift baobab libpamac libpamac-flatpak-plugin libpamac-snap-plugin pamac-cli manjaro-settings-manager manjaro-icons manjaro-printer manjaro-input manjaro-pipewire webapp-manager-manjaro os-prober git wget curl cups

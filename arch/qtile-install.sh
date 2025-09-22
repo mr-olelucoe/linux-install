@@ -1,0 +1,1 @@
+sudo pacman -Sy qtile lxappearance nitrogen thunar nemo xfce4-terminal picom falkon archlinux-wallpaper lightdm lightdm-gtk-greeter kate htop note-fonts note-fonts-emoji

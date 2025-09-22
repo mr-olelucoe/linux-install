@@ -1,0 +1,25 @@
+установка базовой версии arch
+
+setfont ter-132n
+
+sudo pacman -Sy qtile lxappearance nitrogen thunar xfce4-terminal picom midori archlinux-wallpaper lightdm lightdm-gtk-greeter kate	nemo
+    
+sudo systemctl enable lightdm
+
+kate .xprofile
+добавить 
+#setxkbmap ru
+nitrogen -restore
+picom -f
+
+запустить nitrogen в настройках добавить папку 
+/usr/share/backgrounds/archlinux
+
+и установить обои
+
+добавить шрифты terminus-font ttf-terminus-nerd
+
+файл конфигурации в домашней папке
+	.config/qtile/config.py
+kate .config/qtile/config.py
+

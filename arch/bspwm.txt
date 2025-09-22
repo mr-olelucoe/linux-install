@@ -1,0 +1,25 @@
+sudo pacman -S bspwm sxhkd
+
+sudo pacman -S xorg-server xorg-xinit
+
+cp /etc/X11/xinit/xinitrc ~/.xinitrc
+
+Редактируем его и добавляем запуск sxhkd и bspwm:
+    sxhkd &
+    exec bspwm
+
+mkdir ~/.config/bspwm
+
+mkdir ~/.conifg/sxhkd
+
+cp /usr/share/doc/bspwm/examples/bspwmrc ~/.config/bspwm/
+
+cp /usr/share/doc/bspwm/examples/sxhkd/sxhkdrc ~/.config/sxhkd/
+
+chmod +x ~/.config/bspwm/bspwmrc    
+
+Откройте конфигурационный файл sxhkd и укажите тот терминал, который необходимо открыть по сочетанию клавиш Win + Enter (например konsole):
+    nano ~/.config/sxhkd/sxhkdrc
+
+Собственно, запуск:
+startx
