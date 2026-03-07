@@ -1,25 +1,230 @@
-установка базовой версии arch
 
-setfont ter-132n
+настройка pacman в живой ОС
 
-sudo pacman -Sy qtile lxappearance nitrogen thunar xfce4-terminal picom midori archlinux-wallpaper lightdm lightdm-gtk-greeter kate	nemo
-    
-sudo systemctl enable lightdm
+===== настройка сети ===== 
 
-kate .xprofile
+проверить сеть
+	ping ya.ru
+
+если не пингуется настроить сеть
+
+1. настройка статического ip
+	vim /etc/systemd/network/20-ethernet.network 
+добавить / отредактировать
+ [Match]
+	Name=<device-name>
+
+	[Network]
+	Address=<ip-address>/24
+	Gateway=<ip-gateway>  # Укажите IP-адрес вашего шлюза
+	DNS=<ip-dns1> <ip-dns2>
+
+после перезапустить сеть
+  systemctl restart systemd-networkd
+
+для проверки настройки сетевого интерфейса
+  ip addr show
+
+снова проверить доступность ya.ru
+  ping ya.ru
+
+настроить сеть
+проверить зеркала, должен отработать рефлектор 
+	vim /etc/pacman.d/mirrorlist
+
+
+===== настройка pacman в живой ОС ===== 
+
+проверить список зеркал - дожен отработать рефлектор
+список заркал должен содержать не более 30 зеркал
+  vim /etc/pacman.d/mirrorlist
+
+можно добавить зекрало 
+  https://mirror.yandex.ru/archlinux/$repo/os/$arch
+
+скорректировать настройки pacman
+  vim /etc/pacman.conf
+установить 
+  ParallelDownloads = 15
+раскоментировать Color
+
+обновить базу данных pacman
+  pacman -Sy
+
+сделать это для отключения ошибок при установке пакетов
+  pacman -Syy archlinux-keyring --noconfirm
+
+
+
+===== проверка времени ===== 
+
+ввести
+  timedatectl
+
+если будет 
+  System clock synchronized yes
+то все ок, иначе установить пакет
+  pacman -S chrony
+запустить 
+  systemctl start chronyd
+проверить снова 
+  timedatectl
+
+===== подготовка диска ===== 
+
+проверить как называется диск
+  lsblk
+как правило это будет sda, sdb и т.д.
+
+провести разметку например с помощью cfdisk
+создать разделы 
+  sda1 - efi 512M
+  sda2 - swap равен размеру ОЗУ
+  sda3 - / остальная чатсть диска
+
+отформатировать разделы
+
+  mkfs.vfat /dev/sda1
+  mkswap /dev/sda2
+  mkfs.ext4 /dev/sda3
+
+===== монтирование дисков ===== 
+
+корень
+  mount /dev/sda3 /mnt
+
+swap
+  swapon /dev/sda2
+
+efi
+  mkdir -p /mnt/boot/efi
+  mount /dev/sda1 /mnt/boot/efi
+
+
+===== установка системы ===== 
+
+создать файл если такого нет (из-за его отсутствия иногда вылезает ошибка) 
+  /mnt/etc/vconsole.conf
+
+pacstrap /mnt base base-devel linux linux-firmware linux-headers
+xorg-server xorg-xinit efibootmgr grub os-prober sudo 
+vim man bash-completion networkmanager alacritty firefox
+
+
+===== создание конфигурационного файла разделов ===== 
+
+  genfstab -U /mnt >> /mnt/etc/fstab
+
+проверить что записали
+  cat /mnt/etc/fstab
+
+
+===== вход в созданную систему ===== 
+
+  arch-chroot /mnt
+
+
+===== синхронизация времен ===== 
+
+просмотреть регионы
+  ls /usr/share/zoneinfo/
+просмотреть города
+  ls /usr/share/zoneinfo/<Region>
+
+установить часовой пояс
+  ln -sf /usr/share/zoneinfo/<Region>/<City> /etc/localtime
+
+синхронизировать время
+  hwclock --systohc
+
+
+===== настройка pacman ===== 
+
+произвести настройку как и в живой ОС
+проверить mirrorlist и pacman.conf на 15 одновременных загрузок
+
+
+===== локализайия системы ===== 
+
+отредактировать файл 
+  vim /etc/locale.gen
+
+раскоментировать 
+    ru_RU.UTF-8
+    en_US.UTF-8
+
+добавить / отредактировать файл 
+  vim /etc/locale.conf
+добавить
+    LANG=ru_RU.UTF-8    
+
+отредактировать файл
+  vim /etc/vconsole.conf
+добавить в него
+  KEYMAP=ru
+  FONT=cyr-sun16
+добавить имя компа
+  vim /etc/hostname
+отредактировать 
+  vim /etc/hosts
 добавить 
-#setxkbmap ru
-nitrogen -restore
-picom -f
+  127.0.0.1 <comp-name>.localdomain <comp-name>
 
-запустить nitrogen в настройках добавить папку 
-/usr/share/backgrounds/archlinux
+сгенерировать локаль
+    locale-gen
+    
+===== сделать снимок системы ===== 
 
-и установить обои
+  mkinitcpio -P
 
-добавить шрифты terminus-font ttf-terminus-nerd
+===== настроить сеть в новой системе ===== 
 
-файл конфигурации в домашней папке
-	.config/qtile/config.py
-kate .config/qtile/config.py
+  systemctl enable NetworkManager
 
+Настройка статического IP
+  nmcli con add type ethernet ifname eth0 con-name "static-eth" ip4 192.168.44.147/24 gw4 192.168.44.11
+  nmcli con mod "static-eth" ipv4.dns "77.88.8.8 8.8.8.8"
+
+===== установка загрузчика ===== 
+
+устанавливаем загрузчик на диск (не на раздел), с диском efi так сработает если установлен пакет efibootmgr
+    grub-install /dev/sd(a,b,d) 
+
+сгенерировать конфигурационный файл загрузчика
+   grub-mkconfig -o /boot/grub/grub.cfg
+
+
+===== работа с аккаунтами ===== 
+
+задать пароль для root
+  passwd
+
+добавить пользователя
+    useradd -  m -G wheel -s /bin/bash <name>
+
+задать пароль этому пользователю
+    passwd <name>
+
+раскоментировать #%wheel ALL=(ALL:ALL) ALL в файле 
+    vim /etc/sudoers
+
+
+===== выйти из новой системы ===== 
+
+выход
+  exit
+
+размонтировать 
+  umount -R /mnt
+
+далее перезагрузка.
+Здесь у нас голый arch
+
+
+===== установка qtile ===== 
+
+sudo pacman -Sy qtile lxappearance thunar picom archlinux-wallpaper lightdm lightdm-gtk-greeter kate
+
+systemctl enable lightdm.service
+
+reboot
