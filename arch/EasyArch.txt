@@ -1,0 +1,5 @@
+pacman -Sy git ; git clone https://codeberg.org/linuxshef/easyarch.git 
+
+cd easyarch
+
+./easyarch
