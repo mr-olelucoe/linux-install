@@ -25,6 +25,9 @@ base base-devel linux-zen linux-zen-headers linux-firmware vim efibootmgr btrfs-
 systemctl enable systemd-networkd.service
 systemctl enable systemd-resolved.service
 
+вариант настройки сети если установить networkmanager - вместе с ним идет консольная утилита nwtui - очнь удобно настраивать сеть из терминала
+
+
 поставил grub на диск
 
 сделал mkinitcpuio
