@@ -1,0 +1,40 @@
+установить чистый арч.
+можно скриптом linuxshef без выбора оболочки.
+в дополнительных пакетах указать bspwm sxhkd
+
+Производительное ядро linux-zen linux-zen-headers
+Обычное ядро linux linux-headers
+Стабильное ядро linux-lts linux-lts-headers
+
+pacstrap /mnt base base-devel linux-zen linux-zen-headers linux-firmware iucode-tool \
+    btrfs-progs dosfstools efibootmgr grub grub-btrfs \
+    amd-ucode intel-ucode networkmanager dhcpcd nano vim \
+    archlinux-keyring --noconfirm
+
+
+Это у linuxshef для установки i3. Вместо i3 можно воткнуть bspwm sxhkd
+arch-chroot /mnt pacman -S --noconfirm xorg xorg-xinit i3-wm i3status i3lock \
+    dmenu alacritty rofi picom nitrogen feh network-manager-applet volumeicon \
+    xss-lock polkit-gnome ttf-dejavu ttf-droid ttf-font-awesome
+
+пакеты от Денис Ortin Новиков:
+base base-devel linux-zen linux-zen-headers linux-firmware vim efibootmgr btrfs-progs grub ttf-dejavu xorg-server xorg-xrandr xorg-xinit pulseaudio alsa alsa-utils pulseaudio-alsa links git bspwm sxhkd ranger alacritty pavucontrol zsh dmenu dunst firefox
+
+настроил сеть через systemd-networkd:
+/etc/systemd/network/20-ethernet.network
+systemctl enable systemd-networkd.service
+systemctl enable systemd-resolved.service
+
+поставил grub на диск
+
+сделал mkinitcpuio
+
+добавил пользователя 
+useradd -m -g users -G wheel -s /bin/zsh andrey
+отредактировал 
+/etc/sudoers
+
+перезагрузка и вход
+поставил yay через текстовый браузер links. Наверно это можно сделать позже
+
+
