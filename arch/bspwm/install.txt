@@ -40,4 +40,74 @@ useradd -m -g users -G wheel -s /bin/zsh andrey
 перезагрузка и вход
 поставил yay через текстовый браузер links. Наверно это можно сделать позже
 
+==========
+я ставил 
+база:
+    base base-devel linux-zen linux-zen-headers linux-firmware iucode-tool \
+    btrfs-progs dosfstools efibootmgr grub grub-btrfs \
+    amd-ucode intel-ucode networkmanager dhcpcd nano vim \
+    archlinux-keyring --noconfirm
+дополнительно:
+  xorg-server xorg-xrandr xorg-xinit dmenu alacritty rofi picom bspwm sxhkd ranger feh network-manager-applet xss-lock polkit-gnome ttf-dejavu ttf-droid ttf-font-awesome vim zsh dunst firefox
+git lightdm lightdm-gtk-greeter
 
+systemctl enable lightdm
+
+если не папки .config - создать
+  mkdir .config
+создать папки для настройки bspwm sxhkd 
+  mkdir .config/bspwm
+  mkdir .config/sxhkd
+скопировать готовые конфигурации
+  cp /usr/share/doc/bspwm/example/bspwm/bspwmrc ~/.config/bspwm
+  cp /usr/share/doc/bspwm/example/bspwm/sxhkdrc ~/.config/sxhkd
+разрешить запуск sxhkd
+  chmod +x .config/sxhkd/sxhkdrc
+
+создал файл .xinitrc в домашнем каталоге
+  vim .xinitrc
+и добавил в него строки
+  sxhkd &
+  exec bspwm
+
+скачал картинку для обоев рабочего стола, обозвал arch01.png и сохранил в папке images 
+поставить картинку в качестве обоев
+  feh --bg-fill ~/images/arch01.png
+после этого в домашнем каталоге появится файл .fehbg
+для восстановления обоев после перезагрузки добавил в bspwmrc строку
+  sh ~/.fehbg &
+
+для переключения раскладки добавил в bspwm
+  setxkbmap -layout us,ru -option grp:alt_shift_toggle
+
+установить yay
+  git clone https://aur.archlinux.org/yay.git
+  cd yay
+  makepkg -sirc
+
+установить polybar
+  yay -S polybar-git
+
+стрка запуск polybar
+  polybar -c ~/.config/polybar/config example
+
+эту строку можно добавить в bspwmrc, можно написать скрипт для запуск
+
+сменил шелл для пользователя
+  usermod --shell /bin/zsh andrey
+после изменения нужно перезайти
+
+поставил oh-my-zsh - зайти на сайт, скопировать установочный скрипт и запустить его. 
+
+для управления темами поставил 
+  pacman -S lxappearance qt5ct
+
+добавил пакет возможно используется для работы picom
+  pacman -S xorg-xwininfo
+
+сконфигурировать picom (прозрачность, закругленя углов)
+  mkdir .config/picom
+  cp /usr/share/doc/picom/picom.conf.example ~/.config/picom/picom.conf
+
+добавить запуск picom в файл bspwmrc 
+  picom --config ~/.config/picom/picom.conf
